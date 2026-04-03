@@ -339,18 +339,44 @@ const query = async (command, args) => {
   return typeof data.output === 'string' ? data.output : JSON.stringify(data.output);
 };
 
+const parseUptimeOutput = (output) => {
+  // "23:55:01 up 2 days,  3:12,  load average: 0.52, 0.48, 0.45"
+  const loadMatch = output.match(/load average[s]?:\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/);
+  const uptimeMatch = output.match(/up\s+(.+?),\s+\d+ user/);
+  return {
+    uptime: uptimeMatch ? uptimeMatch[1].trim() : '',
+    load1: loadMatch ? parseFloat(loadMatch[1]) : 0,
+    load5: loadMatch ? parseFloat(loadMatch[2]) : 0,
+    load15: loadMatch ? parseFloat(loadMatch[3]) : 0,
+  };
+};
+
+const parseFreeOutput = (output) => {
+  // free -m output:
+  //               total  used  free  shared  buff/cache  available
+  // Mem:           7976  2345  3210     123        2420       5300
+  // Swap:          2047   100  1947
+  let mem = null, swap = null;
+  for (const line of output.split('\n')) {
+    const p = line.trim().split(/\s+/);
+    if (p[0] === 'Mem:' && p.length >= 3) {
+      mem = { total: parseFloat(p[1]) || 0, used: parseFloat(p[2]) || 0 };
+    } else if (p[0] === 'Swap:' && p.length >= 3) {
+      swap = { total: parseFloat(p[1]) || 0, used: parseFloat(p[2]) || 0 };
+    }
+  }
+  return { mem, swap };
+};
+
 const fetchSystemData = async () => {
   try {
-    const [loadavg, meminfo, cpustat, psout] = await Promise.all([
-      query('cat', ['/proc/loadavg']),
-      query('cat', ['/proc/meminfo']),
-      query('cat', ['/proc/stat']),
-      query('ps', ['-eo', 'pid,user:15,%cpu,%mem,vsz,rss,stat,comm', '--sort=-%cpu', '--no-headers']),
+    const [uptimeOut, freeOut] = await Promise.all([
+      query('uptime', []),
+      query('free', ['-m']),
     ]);
-    const combined = loadavg + '---MEM---\n' + meminfo + '---CPU---\n' + cpustat + '---PS---\n' + psout;
-    const { data: parsed, cpuStats } = parseSystemData(combined, prevCpuStats.value);
-    prevCpuStats.value = cpuStats;
-    sysData.value = parsed;
+    const header = parseUptimeOutput(uptimeOut);
+    const { mem, swap } = parseFreeOutput(freeOut);
+    sysData.value = { header, tasks: null, cpus: [], mem, swap, processes: [] };
   } catch (e) {
     console.error('Failed to fetch system data:', e);
   }
