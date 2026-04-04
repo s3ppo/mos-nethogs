@@ -52,12 +52,12 @@ jobs:
           PKG_DIR="${PKG_NAME}_amd64"
 
           mkdir -p ${PKG_DIR}/var/www/mos-plugins/mos-htop
-          mkdir -p ${PKG_DIR}/usr/bin
+          mkdir -p ${PKG_DIR}/usr/bin/plugins
           mkdir -p ${PKG_DIR}/DEBIAN
 
           cp -R page/dist/mos-htop/* ${PKG_DIR}/var/www/mos-plugins/mos-htop/
-          cp mos-htop-query.py ${PKG_DIR}/usr/bin/mos-htop-query
-          chmod +x ${PKG_DIR}/usr/bin/mos-htop-query
+          cp mos-htop-query.py ${PKG_DIR}/usr/bin/plugins/mos-htop-query
+          chmod +x ${PKG_DIR}/usr/bin/plugins/mos-htop-query
 
           cat > ${PKG_DIR}/DEBIAN/control << EOF
           Package: mos-htop
