@@ -37,7 +37,10 @@ if ! command -v apt-get >/dev/null 2>&1; then
 fi
 
 log "Aktualisiere Paketlisten..."
-apt-get update
+echo y | apt-get update || {
+  log "Fehler beim apt-get update (dpkg gesperrt?). Versuche spaeter erneut."
+  exit 0
+}
 
 AVAILABLE_PACKAGES=()
 for pkg in "${PACKAGES[@]}"; do
@@ -50,11 +53,14 @@ done
 
 if [[ "${#AVAILABLE_PACKAGES[@]}" -eq 0 ]]; then
   log "Keine installierbaren WLAN-Pakete gefunden."
-  exit 1
+  exit 0
 fi
 
 log "Installiere WLAN-Treiber/Firmware-Pakete..."
-apt-get install -y --no-install-recommends "${AVAILABLE_PACKAGES[@]}"
+echo y | apt-get install -y --no-install-recommends "${AVAILABLE_PACKAGES[@]}" || {
+  log "Fehler bei der Installation (dpkg gesperrt?). Versuche spaeter erneut."
+  exit 0
+}
 
 if command -v modprobe >/dev/null 2>&1; then
   KERNEL_MODULE_DIR="/lib/modules/$(uname -r)"
