@@ -7,18 +7,56 @@ PACKAGES=(
   wireless-regdb
   iw
   wpasupplicant
-  crda
 )
 
 MODULES=(
   cfg80211
   mac80211
+  rtl8xxxu
+  rtw88_core
+  rtw88_usb
+  rtw88_8822bu
+  rtw88_8821cu
   ath9k
   iwlwifi
 )
 
 log() {
   echo "[mos-wifi] $*"
+}
+
+detect_usb_wifi_adapter_status() {
+  if ! command -v usb-devices >/dev/null 2>&1; then
+    return
+  fi
+
+  local unbound_count
+  unbound_count="$({
+    usb-devices | awk '
+      BEGIN { RS=""; FS="\n"; count=0 }
+      {
+        product=""
+        unbound=0
+        for (i=1; i<=NF; i++) {
+          if ($i ~ /^S:[[:space:]]+Product=/) {
+            product = substr($i, index($i, "=") + 1)
+          }
+          if ($i ~ /^I:[[:space:]]/ && $i ~ /Driver=\(none\)/) {
+            unbound=1
+          }
+        }
+        if (unbound && product ~ /(WLAN|Wireless|802\.11|Wi-?Fi)/) {
+          count++
+        }
+      }
+      END { print count }
+    '
+  } 2>/dev/null)"
+
+  if [[ "${unbound_count:-0}" -gt 0 ]]; then
+    log "USB-WLAN-Adapter erkannt, aber ohne gebundenen Kernel-Treiber."
+    log "Hinweis: Je nach Chipsatz ist ggf. ein zusaetzlicher Treiber noetig."
+  fi
 }
 
 if [[ "${EUID}" -ne 0 ]]; then
@@ -56,6 +94,8 @@ echo y | apt-get install -y --no-install-recommends "${AVAILABLE_PACKAGES[@]}" |
   log "Fehler bei der Installation (dpkg gesperrt?). Versuche spaeter erneut."
   exit 0
 }
+
+detect_usb_wifi_adapter_status
 
 if command -v modprobe >/dev/null 2>&1; then
   KERNEL_MODULE_DIR="/lib/modules/$(uname -r)"
