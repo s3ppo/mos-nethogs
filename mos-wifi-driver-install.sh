@@ -75,7 +75,8 @@ report_kernel_wireless_support() {
   local kernel_dir
   local module_count
   local cfg_count
-  local scanned_paths
+  local search_dirs
+  local dir
 
   kernel_dir="/lib/modules/$(uname -r)"
 
@@ -84,15 +85,33 @@ report_kernel_wireless_support() {
     return
   fi
 
-  scanned_paths="${kernel_dir}/kernel/net/wireless ${kernel_dir}/kernel/net/mac80211 ${kernel_dir}/kernel/drivers/net/wireless"
-  module_count="$(find ${scanned_paths} -type f \( -name '*.ko' -o -name '*.ko.xz' -o -name '*.ko.zst' \) 2>/dev/null | wc -l | tr -d ' ')"
+  search_dirs=()
+  for dir in \
+    "${kernel_dir}/kernel/net/wireless" \
+    "${kernel_dir}/kernel/net/mac80211" \
+    "${kernel_dir}/kernel/drivers/net/wireless"; do
+    if [[ -d "${dir}" ]]; then
+      search_dirs+=("${dir}")
+    fi
+  done
+
+  if [[ "${#search_dirs[@]}" -eq 0 ]]; then
+    log "Keine WLAN-Kernelmodulpfade gefunden (net/wireless, net/mac80211, drivers/net/wireless)."
+    log "Hinweis: Dieser MOS-Kernel enthaelt vermutlich keine passenden WLAN-USB-Treiber."
+    return
+  fi
+
+  module_count="$(find "${search_dirs[@]}" -type f \( -name '*.ko' -o -name '*.ko.xz' -o -name '*.ko.zst' \) 2>/dev/null | wc -l | tr -d ' ')"
   if [[ "${module_count:-0}" -eq 0 ]]; then
     log "Keine ladbaren WLAN-Kernelmodule in net/wireless, net/mac80211 oder drivers/net/wireless gefunden."
     log "Hinweis: Dieser MOS-Kernel enthaelt vermutlich keine passenden WLAN-USB-Treiber."
     return
   fi
 
-  cfg_count="$(find "${kernel_dir}/kernel/net/wireless" -type f -name 'cfg80211*.ko*' 2>/dev/null | wc -l | tr -d ' ')"
+  cfg_count="0"
+  if [[ -d "${kernel_dir}/kernel/net/wireless" ]]; then
+    cfg_count="$(find "${kernel_dir}/kernel/net/wireless" -type f -name 'cfg80211*.ko*' 2>/dev/null | wc -l | tr -d ' ')"
+  fi
   log "Kernel-WLAN-Module gefunden: ${module_count}"
   if [[ "${cfg_count:-0}" -eq 0 ]]; then
     log "Hinweis: cfg80211-Moduldatei nicht gefunden (kann auch einkompiliert sein)."
