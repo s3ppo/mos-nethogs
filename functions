@@ -1,30 +1,36 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/bash
 
-INSTALLER_BIN="/usr/bin/plugins/mos-nethogs-install"
+PLG_DIR="/boot/optional/plugins/mos-nethogs"
 
-run_nethogs_install() {
-  if [[ -x "$INSTALLER_BIN" ]]; then
-    "$INSTALLER_BIN" || true
+install() {
+  # Run installer on first install
+  if [[ -x "/usr/bin/plugins/mos-nethogs-install" ]]; then
+    /usr/bin/plugins/mos-nethogs-install || true
   fi
 }
 
-install() {
-  run_nethogs_install
-}
-
 plugin_update() {
-  run_nethogs_install
+  # Run installer on plugin updates
+  if [[ -x "/usr/bin/plugins/mos-nethogs-install" ]]; then
+    /usr/bin/plugins/mos-nethogs-install || true
+  fi
 }
 
 mos_start() {
-  run_nethogs_install
+  # Run installer on system start
+  if [[ -x "/usr/bin/plugins/mos-nethogs-install" ]]; then
+    /usr/bin/plugins/mos-nethogs-install || true
+  fi
 }
 
 mos_osupdate() {
-  run_nethogs_install
+  # Run installer on OS updates
+  if [[ -x "/usr/bin/plugins/mos-nethogs-install" ]]; then
+    /usr/bin/plugins/mos-nethogs-install || true
+  fi
 }
 
 uninstall() {
+  # Cleanup on uninstall
   true
 }
