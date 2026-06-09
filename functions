@@ -2,31 +2,54 @@
 
 PLG_DIR="/boot/optional/plugins/mos-nethogs"
 
+# Retry mechanism for dpkg operations
+retry_dpkg() {
+  local max_attempts=5
+  local attempt=1
+  local wait_time=2
+  
+  while [ $attempt -le $max_attempts ]; do
+    if "$@"; then
+      return 0
+    fi
+    
+    if [ $attempt -lt $max_attempts ]; then
+      echo "Attempt $attempt failed, waiting ${wait_time}s before retry..."
+      sleep $wait_time
+      wait_time=$((wait_time * 2))  # exponential backoff
+    fi
+    
+    attempt=$((attempt + 1))
+  done
+  
+  return 1
+}
+
 install() {
-  # Run installer on first install
+  # Run installer on first install with dpkg retry
   if [[ -x "/usr/bin/plugins/mos-nethogs-install" ]]; then
-    /usr/bin/plugins/mos-nethogs-install || true
+    retry_dpkg /usr/bin/plugins/mos-nethogs-install || true
   fi
 }
 
 plugin_update() {
-  # Run installer on plugin updates
+  # Run installer on plugin updates with dpkg retry
   if [[ -x "/usr/bin/plugins/mos-nethogs-install" ]]; then
-    /usr/bin/plugins/mos-nethogs-install || true
+    retry_dpkg /usr/bin/plugins/mos-nethogs-install || true
   fi
 }
 
 mos_start() {
-  # Run installer on system start
+  # Run installer on system start with dpkg retry
   if [[ -x "/usr/bin/plugins/mos-nethogs-install" ]]; then
-    /usr/bin/plugins/mos-nethogs-install || true
+    retry_dpkg /usr/bin/plugins/mos-nethogs-install || true
   fi
 }
 
 mos_osupdate() {
-  # Run installer on OS updates
+  # Run installer on OS updates with dpkg retry
   if [[ -x "/usr/bin/plugins/mos-nethogs-install" ]]; then
-    /usr/bin/plugins/mos-nethogs-install || true
+    retry_dpkg /usr/bin/plugins/mos-nethogs-install || true
   fi
 }
 

@@ -67,25 +67,48 @@ jobs:
           set -e
 
           if [ "$1" = "configure" ]; then
-            VERSION=$(dpkg -s mos-nethogs | grep '^Version:' | awk '{print $2}' | sed 's/-1+mos-plugin//')
+            # Try to extract version from package filename instead of dpkg -s
+            # This avoids dpkg lock issues
+            PKG_VERSION=$(cat /var/lib/dpkg/status.d/* 2>/dev/null | grep -A2 "Package: mos-nethogs" | grep "Version:" | head -1 | awk '{print $2}' | sed 's/-1+mos-plugin//' || echo "")
+            
+            # Fallback: extract from package metadata if available
+            if [ -z "$PKG_VERSION" ]; then
+              PKG_VERSION=$(dpkg-query -W -f='${Version}' mos-nethogs 2>/dev/null | sed 's/-1+mos-plugin//' || echo "")
+            fi
+            
+            # If we still don't have version, try reading from control file during install
+            if [ -z "$PKG_VERSION" ]; then
+              PKG_VERSION=$(grep "^Version:" /var/cache/apt/archives/mos-nethogs*.deb 2>/dev/null | head -1 | awk '{print $2}' | sed 's/-1+mos-plugin//' || echo "0.0.0")
+            fi
+            
             PLG_DIR="/boot/optional/plugins/mos-nethogs"
             
             # Create version directory
-            mkdir -p "${PLG_DIR}/${VERSION}"
+            mkdir -p "${PLG_DIR}/${PKG_VERSION}"
             
             # Copy plugin files from /var/www/mos-plugins/mos-nethogs/ to version directory
             if [ -d "/var/www/mos-plugins/mos-nethogs" ]; then
-              cp -R /var/www/mos-plugins/mos-nethogs/* "${PLG_DIR}/${VERSION}/" 2>/dev/null || true
+              cp -R /var/www/mos-plugins/mos-nethogs/* "${PLG_DIR}/${PKG_VERSION}/" 2>/dev/null || true
               
               # Make functions executable if it exists
-              if [ -f "${PLG_DIR}/${VERSION}/functions" ]; then
-                chmod +x "${PLG_DIR}/${VERSION}/functions"
+              if [ -f "${PLG_DIR}/${PKG_VERSION}/functions" ]; then
+                chmod +x "${PLG_DIR}/${PKG_VERSION}/functions"
               fi
             fi
             
-            # Run installer if available
+            # Run installer if available (with retry for dpkg lock)
             if [ -x /usr/bin/plugins/mos-nethogs-install ]; then
-              /usr/bin/plugins/mos-nethogs-install || true
+              max_attempts=5
+              attempt=1
+              while [ $attempt -le $max_attempts ]; do
+                if /usr/bin/plugins/mos-nethogs-install; then
+                  break
+                fi
+                if [ $attempt -lt $max_attempts ]; then
+                  sleep 2
+                fi
+                attempt=$((attempt + 1))
+              done || true
             fi
           fi
 
