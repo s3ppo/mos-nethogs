@@ -4,7 +4,6 @@ set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
 SCRIPT_VERSION="2026-06-09"
 
-# Core package for nethogs
 PACKAGES=(
   nethogs
   iftop
@@ -52,10 +51,10 @@ report_system_info
 detect_network_interfaces
 
 log "Updating package lists..."
-if ! apt-get update >/dev/null 2>&1; then
+echo y | apt-get update || {
   log "Error during apt-get update (dpkg locked?). Will retry later."
   exit 0
-fi
+}
 
 AVAILABLE_PACKAGES=()
 for pkg in "${PACKAGES[@]}"; do
@@ -72,10 +71,10 @@ if [[ "${#AVAILABLE_PACKAGES[@]}" -eq 0 ]]; then
 fi
 
 log "Installing Nethogs and network monitoring tools..."
-if ! apt-get install -y --no-install-recommends "${AVAILABLE_PACKAGES[@]}" 2>&1; then
+echo y | apt-get install -y --no-install-recommends "${AVAILABLE_PACKAGES[@]}" || {
   log "Error during installation (dpkg locked?). Will retry later."
   exit 0
-fi
+}
 
 log "Installation completed successfully."
 log "You can now use nethogs to monitor network traffic:"
