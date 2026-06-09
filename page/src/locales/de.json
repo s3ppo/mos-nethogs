@@ -15,7 +15,7 @@
     "information": "Information",
     "installer_runs_at": "Der Installer wird automatisch ausgefuehrt bei:",
     "plugin_installation": "Plugin-Installation",
-    "system_start": "Systembeginn",
+    "system_start": "Systemstart",
     "os_updates": "OS-Updates",
     "github_repository": "GitHub Repository",
     "support": "Support",
@@ -25,6 +25,17 @@
     "running": "Installation laeuft...",
     "install_failed": "Nethogs-Installation fehlgeschlagen.",
     "install_complete": "Nethogs-Installation abgeschlossen.",
-    "error_prefix": "Fehler"
+    "error_prefix": "Fehler",
+    "live_traffic": "Live-Netzwerkverkehr",
+    "live_traffic_desc": "Bandbreite pro Prozess, aktualisiert alle 3 Sekunden",
+    "col_program": "Programm",
+    "col_pid": "PID",
+    "col_user": "Benutzer",
+    "col_interface": "Interface",
+    "col_sent": "Senden KB/s",
+    "col_recv": "Empfangen KB/s",
+    "no_traffic": "Kein aktiver Netzwerkverkehr erkannt.",
+    "polling_error": "Verkehrsdaten konnten nicht abgerufen werden.",
+    "last_updated": "Zuletzt aktualisiert"
   }
 }

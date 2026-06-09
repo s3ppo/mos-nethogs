@@ -59,8 +59,10 @@ jobs:
           cp functions ${PKG_DIR}/var/www/mos-plugins/mos-nethogs/functions
           cp settings.json ${PKG_DIR}/var/www/mos-plugins/mos-nethogs/settings.json
           cp mos-nethogs-install.sh ${PKG_DIR}/usr/bin/plugins/mos-nethogs-install
+          cp mos-nethogs-query.sh ${PKG_DIR}/usr/bin/plugins/mos-nethogs-query
           chmod +x ${PKG_DIR}/var/www/mos-plugins/mos-nethogs/functions
           chmod +x ${PKG_DIR}/usr/bin/plugins/mos-nethogs-install
+          chmod +x ${PKG_DIR}/usr/bin/plugins/mos-nethogs-query
 
           echo "IyEvYmluL3NoCnNldCAtZQoKaWYgWyAiJDEiID0gImNvbmZpZ3VyZSIgXTsgdGhlbgogIGlmIFsgLXggL3Vzci9iaW4vcGx1Z2lucy9tb3MtbmV0aG9ncy1pbnN0YWxsIF07IHRoZW4KICAgIC91c3IvYmluL3BsdWdpbnMvbW9zLW5ldGhvZ3MtaW5zdGFsbCB8fCB0cnVlCiAgZmkKZmkKCmV4aXQgMAo=" | base64 -d > ${PKG_DIR}/DEBIAN/postinst
           chmod 755 ${PKG_DIR}/DEBIAN/postinst

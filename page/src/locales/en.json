@@ -25,6 +25,17 @@
     "running": "Installation in progress...",
     "install_failed": "Nethogs installation failed.",
     "install_complete": "Nethogs installation completed.",
-    "error_prefix": "Error"
+    "error_prefix": "Error",
+    "live_traffic": "Live Network Traffic",
+    "live_traffic_desc": "Per-process bandwidth updated every 3 seconds",
+    "col_program": "Program",
+    "col_pid": "PID",
+    "col_user": "User",
+    "col_interface": "Interface",
+    "col_sent": "Sent KB/s",
+    "col_recv": "Recv KB/s",
+    "no_traffic": "No active network traffic detected.",
+    "polling_error": "Could not fetch traffic data.",
+    "last_updated": "Last updated"
   }
 }

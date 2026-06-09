@@ -28,5 +28,10 @@ export default {
       executable: '/usr/bin/plugins/mos-nethogs-install',
       description: 'Install Nethogs and network monitoring tools',
     },
+    {
+      name: 'mos-nethogs-query',
+      executable: '/usr/bin/plugins/mos-nethogs-query',
+      description: 'Query active nethogs processes as JSON',
+    },
   ],
 };
