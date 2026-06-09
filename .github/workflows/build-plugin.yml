@@ -62,68 +62,10 @@ jobs:
           chmod +x ${PKG_DIR}/var/www/mos-plugins/mos-nethogs/functions
           chmod +x ${PKG_DIR}/usr/bin/plugins/mos-nethogs-install
 
-          cat > ${PKG_DIR}/DEBIAN/postinst << 'EOF'
-          #!/bin/sh
-          set -e
-
-          if [ "$1" = "configure" ]; then
-            # Try to extract version from package filename instead of dpkg -s
-            # This avoids dpkg lock issues
-            PKG_VERSION=$(cat /var/lib/dpkg/status.d/* 2>/dev/null | grep -A2 "Package: mos-nethogs" | grep "Version:" | head -1 | awk '{print $2}' | sed 's/-1+mos-plugin//' || echo "")
-            
-            # Fallback: extract from package metadata if available
-            if [ -z "$PKG_VERSION" ]; then
-              PKG_VERSION=$(dpkg-query -W -f='${Version}' mos-nethogs 2>/dev/null | sed 's/-1+mos-plugin//' || echo "")
-            fi
-            
-            # If we still don't have version, try reading from control file during install
-            if [ -z "$PKG_VERSION" ]; then
-              PKG_VERSION=$(grep "^Version:" /var/cache/apt/archives/mos-nethogs*.deb 2>/dev/null | head -1 | awk '{print $2}' | sed 's/-1+mos-plugin//' || echo "0.0.0")
-            fi
-            
-            PLG_DIR="/boot/optional/plugins/mos-nethogs"
-            
-            # Create version directory
-            mkdir -p "${PLG_DIR}/${PKG_VERSION}"
-            
-            # Copy plugin files from /var/www/mos-plugins/mos-nethogs/ to version directory
-            if [ -d "/var/www/mos-plugins/mos-nethogs" ]; then
-              cp -R /var/www/mos-plugins/mos-nethogs/* "${PLG_DIR}/${PKG_VERSION}/" 2>/dev/null || true
-              
-              # Make functions executable if it exists
-              if [ -f "${PLG_DIR}/${PKG_VERSION}/functions" ]; then
-                chmod +x "${PLG_DIR}/${PKG_VERSION}/functions"
-              fi
-            fi
-            
-            # Run installer if available (with retry for dpkg lock)
-            if [ -x /usr/bin/plugins/mos-nethogs-install ]; then
-              max_attempts=5
-              attempt=1
-              while [ $attempt -le $max_attempts ]; do
-                if /usr/bin/plugins/mos-nethogs-install; then
-                  break
-                fi
-                if [ $attempt -lt $max_attempts ]; then
-                  sleep 2
-                fi
-                attempt=$((attempt + 1))
-              done || true
-            fi
-          fi
-
-          exit 0
-          EOF
+          echo "IyEvYmluL3NoCnNldCAtZQoKaWYgWyAiJDEiID0gImNvbmZpZ3VyZSIgXTsgdGhlbgogIGlmIFsgLXggL3Vzci9iaW4vcGx1Z2lucy9tb3MtbmV0aG9ncy1pbnN0YWxsIF07IHRoZW4KICAgIC91c3IvYmluL3BsdWdpbnMvbW9zLW5ldGhvZ3MtaW5zdGFsbCB8fCB0cnVlCiAgZmkKZmkKCmV4aXQgMAo=" | base64 -d > ${PKG_DIR}/DEBIAN/postinst
           chmod 755 ${PKG_DIR}/DEBIAN/postinst
 
-          cat > ${PKG_DIR}/DEBIAN/control << EOF
-          Package: mos-nethogs
-          Version: ${VERSION}-1+mos-plugin
-          Architecture: amd64
-          Maintainer: admin@minenet.at
-          Depends: python3, apt
-          Description: Nethogs Network Monitor Plugin for MOS
-          EOF
+          echo "UGFja2FnZTogbW9zLW5ldGhvZ3MKVmVyc2lvbjogVkVSU0lPTl9QTEFDRUhPTERFUi0xK21vcy1wbHVnaW4KQXJjaGl0ZWN0dXJlOiBhbWQ2NApNYWludGFpbmVyOiBhZG1pbkBtaW5lbmV0LmF0CkRlcGVuZHM6IHB5dGhvbjMsIGFwdApEZXNjcmlwdGlvbjogTmV0aG9ncyBOZXR3b3JrIE1vbml0b3IgUGx1Z2luIGZvciBNT1MK" | base64 -d | sed "s/VERSION_PLACEHOLDER/${VERSION}/" > ${PKG_DIR}/DEBIAN/control
 
       - name: Build .deb package
         run: |
