@@ -23,6 +23,10 @@ const generateManifest = () => ({
       homepage: pluginConfig.homepage || '',
     };
 
+    if (pluginConfig.commands) {
+      manifest.commands = pluginConfig.commands;
+    }
+
     try {
       mkdirSync(outDir, { recursive: true });
       writeFileSync(resolve(outDir, 'manifest.json'), JSON.stringify(manifest, null, 2));
