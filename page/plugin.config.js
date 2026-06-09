@@ -1,38 +1,38 @@
 const translations = {
   en: {
-    displayName: 'WiFi Drivers for MOS',
-    description: 'WiFi driver and firmware management',
+    displayName: 'Nethogs Network Monitor for MOS',
+    description: 'Real-time network traffic monitoring tool',
     commands: {
-      install: 'Install WiFi drivers and firmware',
+      install: 'Install Nethogs and network monitoring tools',
     },
   },
   de: {
-    displayName: 'WiFi-Treiber fuer MOS',
-    description: 'Verwaltung von WiFi-Treibern und Firmware',
+    displayName: 'Nethogs Netzwerk-Monitor fuer MOS',
+    description: 'Echtzeit-Netzwerküberwachungstool',
     commands: {
-      install: 'WiFi-Treiber und Firmware installieren',
+      install: 'Nethogs und Netzwerk-Überwachungstools installieren',
     },
   },
 };
 
 export default {
-  name: 'mos-wifi',
+  name: 'mos-nethogs',
   displayName: translations.en.displayName,
   description: translations.en.description,
   version: '0.0.1',
-  icon: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/google-wifi.png',
-  category: ['Driver'],
+  icon: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/network-topology.png',
+  category: ['Network'],
   architecture: ['amd64'],
-  driver: true,
-  author: 's3ppo',
-  homepage: 'https://github.com/s3ppo/mos_wifi',
-  repository: 'https://github.com/s3ppo/mos_wifi',
-  support: 'https://github.com/s3ppo/mos_wifi/issues',
+  driver: false,
+  author: 'MOS Community',
+  homepage: 'https://github.com/netoptimizer/nethogs',
+  repository: 'https://github.com/netoptimizer/nethogs',
+  support: 'https://github.com/netoptimizer/nethogs/issues',
   translations,
   commands: [
     {
-      name: 'mos-wifi-driver-install',
-      executable: '/usr/bin/plugins/mos-wifi-driver-install',
+      name: 'mos-nethogs-install',
+      executable: '/usr/bin/plugins/mos-nethogs-install',
       description: translations.en.commands.install,
     },
   ],

@@ -1,16 +1,16 @@
 {
-  "plugin_wifi": {
-    "title": "WiFi Drivers and Firmware",
-    "description": "Installs commonly used WLAN firmware and drivers",
+  "plugin_nethogs": {
+    "title": "Nethogs Network Monitor",
+    "description": "Installs Nethogs - a real-time network traffic monitoring tool",
     "installation": "Installation",
-    "install": "Install",
-    "initial_prompt": "Click \"Install\" to install WLAN drivers.",
-    "included_drivers": "Included Drivers",
-    "driver_intel": "Intel WiFi (iwlwifi)",
-    "driver_realtek": "Realtek WiFi",
-    "driver_atheros": "Atheros (ATH9K)",
-    "driver_broadcom": "Broadcom (brcmfmac)",
-    "driver_regulatory_database": "Regulatory Database",
+    "install": "Install Nethogs",
+    "initial_prompt": "Click \"Install Nethogs\" to install the network monitoring tool.",
+    "included_packages": "Included Packages",
+    "package_nethogs": "Nethogs - Network traffic monitor",
+    "package_iftop": "iftop - Interactive network top (optional)",
+    "package_vnstat": "vnstat - Network statistics tool (optional)",
+    "package_bmon": "Bandwidth Monitor - Visual bandwidth usage",
+    "package_nethogs_docs": "Nethogs Documentation and Configuration",
     "information": "Information",
     "installer_runs_at": "The installer is run automatically on:",
     "plugin_installation": "Plugin installation",
@@ -22,8 +22,8 @@
     "success": "Installation completed successfully",
     "failed": "Installation failed",
     "running": "Installation in progress...",
-    "install_failed": "Driver installation failed.",
-    "install_complete": "Driver installation completed.",
+    "install_failed": "Nethogs installation failed.",
+    "install_complete": "Nethogs installation completed.",
     "error_prefix": "Error"
   }
 }

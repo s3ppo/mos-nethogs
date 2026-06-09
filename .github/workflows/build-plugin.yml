@@ -48,27 +48,27 @@ jobs:
       - name: Create package structure
         run: |
           VERSION=${{ steps.version.outputs.VERSION }}
-          PKG_NAME="mos-wifi-${VERSION}-1+mos-plugin"
+          PKG_NAME="mos-nethogs-${VERSION}-1+mos-plugin"
           PKG_DIR="${PKG_NAME}_amd64"
 
-          mkdir -p ${PKG_DIR}/var/www/mos-plugins/mos-wifi
+          mkdir -p ${PKG_DIR}/var/www/mos-plugins/mos-nethogs
           mkdir -p ${PKG_DIR}/usr/bin/plugins
           mkdir -p ${PKG_DIR}/DEBIAN
 
-          cp -R page/dist/mos-wifi/* ${PKG_DIR}/var/www/mos-plugins/mos-wifi/
-          cp functions ${PKG_DIR}/var/www/mos-plugins/mos-wifi/functions
-          cp settings.json ${PKG_DIR}/var/www/mos-plugins/mos-wifi/settings.json
-          cp mos-wifi-driver-install.sh ${PKG_DIR}/usr/bin/plugins/mos-wifi-driver-install
-          chmod +x ${PKG_DIR}/var/www/mos-plugins/mos-wifi/functions
-          chmod +x ${PKG_DIR}/usr/bin/plugins/mos-wifi-driver-install
+          cp -R page/dist/mos-nethogs/* ${PKG_DIR}/var/www/mos-plugins/mos-nethogs/
+          cp functions ${PKG_DIR}/var/www/mos-plugins/mos-nethogs/functions
+          cp settings.json ${PKG_DIR}/var/www/mos-plugins/mos-nethogs/settings.json
+          cp mos-nethogs-install.sh ${PKG_DIR}/usr/bin/plugins/mos-nethogs-install
+          chmod +x ${PKG_DIR}/var/www/mos-plugins/mos-nethogs/functions
+          chmod +x ${PKG_DIR}/usr/bin/plugins/mos-nethogs-install
 
           cat > ${PKG_DIR}/DEBIAN/postinst << 'EOF'
           #!/bin/sh
           set -e
 
           if [ "$1" = "configure" ]; then
-            if [ -x /usr/bin/plugins/mos-wifi-driver-install ]; then
-              /usr/bin/plugins/mos-wifi-driver-install || true
+            if [ -x /usr/bin/plugins/mos-nethogs-install ]; then
+              /usr/bin/plugins/mos-nethogs-install || true
             fi
           fi
 
@@ -77,18 +77,18 @@ jobs:
           chmod 755 ${PKG_DIR}/DEBIAN/postinst
 
           cat > ${PKG_DIR}/DEBIAN/control << EOF
-          Package: mos-wifi
+          Package: mos-nethogs
           Version: ${VERSION}-1+mos-plugin
           Architecture: amd64
           Maintainer: admin@minenet.at
           Depends: python3, apt
-          Description: WiFi Drivers Plugin for MOS
+          Description: Nethogs Network Monitor Plugin for MOS
           EOF
 
       - name: Build .deb package
         run: |
           VERSION=${{ steps.version.outputs.VERSION }}
-          PKG_NAME="mos-wifi-${VERSION}-1+mos-plugin"
+          PKG_NAME="mos-nethogs-${VERSION}-1+mos-plugin"
           PKG_DIR="${PKG_NAME}_amd64"
           DEB_FILE="${PKG_NAME}_amd64.deb"
 
@@ -100,13 +100,13 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.version.outputs.VERSION }}
-          name: mos-wifi ${{ steps.version.outputs.VERSION }}
+          name: mos-nethogs ${{ steps.version.outputs.VERSION }}
           body: |
-            ## mos-wifi Plugin ${{ steps.version.outputs.VERSION }}
+            ## mos-nethogs Plugin ${{ steps.version.outputs.VERSION }}
 
           files: |
-            mos-wifi-${{ steps.version.outputs.VERSION }}-1+mos-plugin_amd64.deb
-            mos-wifi-${{ steps.version.outputs.VERSION }}-1+mos-plugin_amd64.deb.md5
+            mos-nethogs-${{ steps.version.outputs.VERSION }}-1+mos-plugin_amd64.deb
+            mos-nethogs-${{ steps.version.outputs.VERSION }}-1+mos-plugin_amd64.deb.md5
           draft: false
           prerelease: false
         env:
