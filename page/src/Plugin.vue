@@ -15,6 +15,7 @@
           <span>{{ $t('plugin_nethogs.installation') }}</span>
           <v-spacer />
           <v-btn 
+            v-if="!isInstalled"
             color="primary" 
             size="large"
             :loading="nethogInstallRunning" 
@@ -23,6 +24,15 @@
           >
             <v-icon start>mdi-download</v-icon>
             {{ $t('plugin_nethogs.install') }}
+          </v-btn>
+          <v-btn 
+            v-else
+            color="success" 
+            size="large"
+            disabled
+          >
+            <v-icon start>mdi-check-circle</v-icon>
+            {{ $t('plugin_nethogs.already_installed') }}
           </v-btn>
         </v-card-title>
 
@@ -130,6 +140,7 @@ const nethogInstallRunning = ref(false);
 const nethogInstallMessage = ref('');
 const lastExitCode = ref(null);
 const timedOut = ref(false);
+const isInstalled = ref(false);
 
 const instance = getCurrentInstance();
 
@@ -169,6 +180,27 @@ const getAuthHeaders = () => ({
   Authorization: 'Bearer ' + localStorage.getItem('authToken'),
 });
 
+const checkInstallationStatus = async () => {
+  try {
+    const res = await fetch('/api/v1/mos/plugins/query', {
+      method: 'POST',
+      headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        command: 'which',
+        args: ['nethogs'],
+        timeout: 10,
+        parse_json: false,
+      }),
+    });
+
+    const data = await res.json();
+    isInstalled.value = res.ok && data.exit_code === 0;
+  } catch (e) {
+    console.debug('Could not check installation status:', e);
+    isInstalled.value = false;
+  }
+};
+
 const installNethogs = async () => {
   nethogInstallRunning.value = true;
   nethogInstallMessage.value = '';
@@ -199,6 +231,11 @@ const installNethogs = async () => {
     nethogInstallMessage.value = data.output || t('plugin_nethogs.install_complete');
     lastExitCode.value = typeof data.exit_code === 'number' ? data.exit_code : 0;
     timedOut.value = Boolean(data.timed_out);
+    
+    // Re-check installation status after successful install
+    if (lastExitCode.value === 0) {
+      await checkInstallationStatus();
+    }
   } catch (e) {
     console.error('Failed to install Nethogs:', e);
     nethogInstallMessage.value = `${t('plugin_nethogs.error_prefix')}: ${e.message}`;
@@ -209,6 +246,7 @@ const installNethogs = async () => {
 };
 
 onMounted(async () => {
+  await checkInstallationStatus();
   loading.value = false;
 });
 </script>

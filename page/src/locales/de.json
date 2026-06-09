@@ -4,6 +4,7 @@
     "description": "Installiert Nethogs - ein Echtzeit-Netzwerküberwachungstool",
     "installation": "Installation",
     "install": "Nethogs installieren",
+    "already_installed": "Bereits installiert",
     "initial_prompt": "Klicke auf \"Nethogs installieren\", um das Netzwerküberwachungstool zu installieren.",
     "included_packages": "Enthaltene Pakete",
     "package_nethogs": "Nethogs - Netzwerk-Verkehrsmonitor",

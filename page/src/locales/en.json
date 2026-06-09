@@ -4,6 +4,7 @@
     "description": "Installs Nethogs - a real-time network traffic monitoring tool",
     "installation": "Installation",
     "install": "Install Nethogs",
+    "already_installed": "Already Installed",
     "initial_prompt": "Click \"Install Nethogs\" to install the network monitoring tool.",
     "included_packages": "Included Packages",
     "package_nethogs": "Nethogs - Network traffic monitor",
