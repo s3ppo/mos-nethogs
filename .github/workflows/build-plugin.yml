@@ -67,6 +67,23 @@ jobs:
           set -e
 
           if [ "$1" = "configure" ]; then
+            VERSION=$(dpkg -s mos-nethogs | grep '^Version:' | awk '{print $2}' | sed 's/-1+mos-plugin//')
+            PLG_DIR="/boot/optional/plugins/mos-nethogs"
+            
+            # Create version directory
+            mkdir -p "${PLG_DIR}/${VERSION}"
+            
+            # Copy plugin files from /var/www/mos-plugins/mos-nethogs/ to version directory
+            if [ -d "/var/www/mos-plugins/mos-nethogs" ]; then
+              cp -R /var/www/mos-plugins/mos-nethogs/* "${PLG_DIR}/${VERSION}/" 2>/dev/null || true
+              
+              # Make functions executable if it exists
+              if [ -f "${PLG_DIR}/${VERSION}/functions" ]; then
+                chmod +x "${PLG_DIR}/${VERSION}/functions"
+              fi
+            fi
+            
+            # Run installer if available
             if [ -x /usr/bin/plugins/mos-nethogs-install ]; then
               /usr/bin/plugins/mos-nethogs-install || true
             fi
