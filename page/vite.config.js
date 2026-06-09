@@ -23,9 +23,11 @@ const generateManifest = () => ({
       homepage: pluginConfig.homepage || '',
     };
 
-    if (pluginConfig.commands) {
-      manifest.commands = pluginConfig.commands;
-    }
+    if (pluginConfig.category) manifest.category = pluginConfig.category;
+    if (pluginConfig.architecture) manifest.architecture = pluginConfig.architecture;
+    if (pluginConfig.repository) manifest.repository = pluginConfig.repository;
+    if (pluginConfig.support) manifest.support = pluginConfig.support;
+    if (pluginConfig.commands) manifest.commands = pluginConfig.commands;
 
     try {
       mkdirSync(outDir, { recursive: true });

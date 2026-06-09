@@ -246,8 +246,14 @@ const installNethogs = async () => {
 };
 
 onMounted(async () => {
-  await checkInstallationStatus();
-  loading.value = false;
+  try {
+    await checkInstallationStatus();
+  } catch (error) {
+    console.error('Failed to check installation status:', error);
+    isInstalled.value = false;
+  } finally {
+    loading.value = false;
+  }
 });
 </script>
 

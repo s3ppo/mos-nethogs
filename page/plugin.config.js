@@ -14,9 +14,13 @@ export default {
   displayName: translations.en.displayName,
   description: translations.en.description,
   version: '0.0.1',
-  icon: 'https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/network-topology.png',
+  icon: 'https://github.com/s3ppo/mos-nethogs/blob/8cf7cbc90b50887fd084a5fb1e614a3256844edf/page/assets/hogs.jpg?raw=true',
   author: 'MOS Community',
   homepage: 'https://github.com/netoptimizer/nethogs',
+  category: ['Network'],
+  architecture: ['amd64'],
+  repository: 'https://github.com/s3ppo/mos-nethogs',
+  support: 'https://github.com/s3ppo/mos-nethogs/issues',
   translations,
   commands: [
     {
